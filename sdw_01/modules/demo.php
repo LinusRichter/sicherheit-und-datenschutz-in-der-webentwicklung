@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 add_action('wp_footer', ['THM\Security\Demo', 'wp_footer'], 10, 0);
 add_filter('get_the_author_display_name', ['THM\Security\Demo', 'author_display_name'], 10, 3); 
-add_filter('admin_notices', ['THM\Security\Demo', 'admin_notices'], 10, 0);
+add_action('admin_notices', ['THM\Security\Demo', 'admin_notices'], 10, 0);
 
 class Demo
 {
