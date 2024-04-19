@@ -1,6 +1,6 @@
 # Sicherheit und Datenschutz in der Webentwicklung
 
-Dieses Repository enthält den Code der Vorlesung "Sicherheit und Datenschutz in der Webentwicklung" an der Technischen Hochschule Mittelhessen.
+Dieses Repository enthält den Code zur Vorlesung "Sicherheit und Datenschutz in der Webentwicklung" an der Technischen Hochschule Mittelhessen.
 
 
 ## Inhalt
