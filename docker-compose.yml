@@ -30,6 +30,9 @@ services:
         source: ./sdw_01
         target: /var/www/html/wp-content/plugins/sdw_01
       - type: bind
+        source: ./sdw_01_first_plugin
+        target: /var/www/html/wp-content/plugins/sdw_01_first_plugin
+      - type: bind
         source: ./sdw_02
         target: /var/www/html/wp-content/plugins/sdw_02
     ports:
