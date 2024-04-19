@@ -13,9 +13,13 @@ class Demo
      */
     public static function wp_footer()
     {
+
+        global $start_time;
+        $m_size = memory_get_usage();
+
         echo '
             <p>
-                Diese Seite wurde in 123 ms gerendert, der maximale Speicherbedarf lag bei 123 MB
+                Diese Seite wurde in '. (microtime(true) - $start_time) .' ms gerendert, der maximale Speicherbedarf lag bei '. $m_size .'MB
             </p>
         ';
     }
