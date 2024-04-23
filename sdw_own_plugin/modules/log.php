@@ -1,13 +1,13 @@
 <?php
 
-namespace THM\Security;
+namespace LinusNiko\Own;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 require_once(dirname(__FILE__) . '/database.php');
 
-add_action('admin_menu', ['\THM\Security\Log', 'add_menu']);
-add_action('init', ['\THM\Security\Log', 'log_access']);
+add_action('admin_menu', ['\LinusNiko\Own\Log', 'add_menu']);
+add_action('init', ['\LinusNiko\Own\Log', 'log_access']);
 
 /**
  * Log module for the THM Security plugin.
@@ -19,7 +19,7 @@ class Log
      */
     public static function add_menu()
     {
-        add_management_page('THM Security', 'THM Security', 'manage_options', 'thm-security', ['\THM\Security\Log', 'render_management_page']);
+        add_management_page('THM Security', 'THM Security', 'manage_options', 'thm-security', ['\LinusNiko\Own\Log', 'render_management_page']);
     }
 
     /**

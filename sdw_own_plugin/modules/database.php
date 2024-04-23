@@ -1,12 +1,12 @@
 <?php
 
-namespace THM\Security;
+namespace LinusNiko\Own;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
-add_action('plugins_loaded',['THM\Security\Database', 'init'], 5);
+add_action('plugins_loaded',['LinusNiko\Own\Database', 'init'], 5);
 
 /**
  * Database module for the THM Security plugin.
