@@ -62,6 +62,7 @@ class Log
                     <th>PROTOCOL</th>
                     <th>URL</th>
                     <th>AGENT</th>
+                    <th>STATUS</th>
                 </tr>
             </thead>
             <tbody>
@@ -74,6 +75,7 @@ class Log
                         <td><?= esc_html($log->protocol) ?></td>
                         <td><?= esc_html($log->url) ?></td>
                         <td><?= esc_html($log->agent) ?></td>
+                        <td><?= esc_html($log->status) ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -99,7 +101,7 @@ class Log
      */
     public static function log_access()
     {   
-        Database::append_access_log($_SERVER['REMOTE_ADDR'], $_SERVER['REMOTE_PORT'], $_SERVER['REQUEST_METHOD'], $_SERVER['SERVER_PROTOCOL'], $_SERVER['REQUEST_URI'], $_SERVER['HTTP_USER_AGENT']);
+        Database::append_access_log($_SERVER['REMOTE_ADDR'], $_SERVER['REMOTE_PORT'], $_SERVER['REQUEST_METHOD'], $_SERVER['SERVER_PROTOCOL'], $_SERVER['REQUEST_URI'], $_SERVER['HTTP_USER_AGENT'], http_response_code());
     }
 }
 

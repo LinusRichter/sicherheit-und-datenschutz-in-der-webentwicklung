@@ -13,7 +13,7 @@ add_action('plugins_loaded',['LinusNiko\Own\Database', 'init'], 5);
  */
 class Database
 {
-    private static $db_version = '3';
+    private static $db_version = '4';
     private static $table_name = 'thm_security_access_log';
 
     /**
@@ -44,7 +44,8 @@ class Database
             method VARCHAR(32) NOT NULL,
             protocol VARCHAR(32) NOT NULL,
             url VARCHAR(128) NOT NULL,
-            agent VARCHAR(256) NOT NULL
+            agent VARCHAR(256) NOT NULL,
+            status VARCHAR(32) NOT NULL
 		) $charset_collate;";
         dbDelta($table);
 
@@ -65,10 +66,10 @@ class Database
     /**
      * Add a new entry to the access log.
      */
-    public static function append_access_log($client, $port, $method, $protocol, $url, $agent)
+    public static function append_access_log($client, $port, $method, $protocol, $url, $agent, $status)
     {
         global $wpdb;
         $table_name = $wpdb->prefix . self::$table_name;
-        $wpdb->insert($table_name, ['client' => $client, 'port' => $port, 'method' => $method, 'protocol' => $protocol, 'url' => $url, 'agent' => $agent]);
+        $wpdb->insert($table_name, ['client' => $client, 'port' => $port, 'method' => $method, 'protocol' => $protocol, 'url' => $url, 'agent' => $agent, 'status' => $status]);
     }
 }
