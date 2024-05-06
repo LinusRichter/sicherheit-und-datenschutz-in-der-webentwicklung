@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 require_once(dirname(__FILE__) . '/database.php');
 
 add_action('admin_menu', ['\LinusNiko\Own\Log', 'add_menu']);
-add_action('init', ['\LinusNiko\Own\Log', 'log_access']);
+add_action('shutdown', ['\LinusNiko\Own\Log', 'log_access']);
 
 /**
  * Log module for the THM Security plugin.
@@ -61,7 +61,17 @@ class Log
                     <th>METHOD</th>
                     <th>PROTOCOL</th>
                     <th>URL</th>
+                    <th>ACCEPT</th>
+                    <th>ACCEPT LANGUAGE</th>
+                    <th>REFERER</th>
                     <th>AGENT</th>
+                    <th>UA</th>
+                    <th>UA MOBILE</th>
+                    <th>UA PLATFORM</th>
+                    <th>FETCH MODE</th>
+                    <th>FETCH SITE</th>
+                    <th>FETCH USER</th>
+                    <th>USER ID</th>
                     <th>STATUS</th>
                 </tr>
             </thead>
@@ -74,7 +84,17 @@ class Log
                         <td><?= esc_html($log->method) ?></td>
                         <td><?= esc_html($log->protocol) ?></td>
                         <td><?= esc_html($log->url) ?></td>
+                        <td><?= esc_html($log->accept) ?></td>
+                        <td><?= esc_html($log->accept_language) ?></td>
+                        <td><?= esc_html($log->referer) ?></td>
                         <td><?= esc_html($log->agent) ?></td>
+                        <td><?= esc_html($log->ua) ?></td>
+                        <td><?= esc_html($log->ua_mobile) ?></td>
+                        <td><?= esc_html($log->ua_platform) ?></td>
+                        <td><?= esc_html($log->fetch_mode) ?></td>
+                        <td><?= esc_html($log->fetch_site) ?></td>
+                        <td><?= esc_html($log->fetch_user) ?></td>
+                        <td><?= esc_html($log->user_id) ?></td>
                         <td><?= esc_html($log->status) ?></td>
                     </tr>
                 <?php endforeach; ?>
@@ -101,8 +121,25 @@ class Log
      */
     public static function log_access()
     {   
-        Database::append_access_log($_SERVER['REMOTE_ADDR'], $_SERVER['REMOTE_PORT'], $_SERVER['REQUEST_METHOD'], $_SERVER['SERVER_PROTOCOL'], $_SERVER['REQUEST_URI'], $_SERVER['HTTP_USER_AGENT'], http_response_code());
+        Database::append_access_log(
+            $_SERVER['REMOTE_ADDR'] ?? '~',
+            $_SERVER['REMOTE_PORT'] ?? '~',
+            $_SERVER['REQUEST_METHOD'] ?? '~',
+            $_SERVER['SERVER_PROTOCOL'] ?? '~',
+            $_SERVER['REQUEST_URI'] ?? '~',
+            $_SERVER['HTTP_ACCEPT'] ?? '~',
+            $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '~',
+            $_SERVER['HTTP_REFERER'] ?? '~',
+            $_SERVER['HTTP_USER_AGENT'] ?? '~',
+            $_SERVER['HTTP_SEC_CH_UA'] ?? '~',
+            $_SERVER['HTTP_SEC_CH_UA_MOBILE'] ?? '~',
+            $_SERVER['HTTP_SEC_CH_UA_PLATFORM '] ?? '~',
+            $_SERVER['HTTP_SEC_FETCH_MODE'] ?? '~',
+            $_SERVER['HTTP_SEC_FETCH_SITE'] ?? '~',
+            $_SERVER['HTTP_SEC_FETCH_USER'] ?? '~',
+            get_current_user_id(),
+            http_response_code()
+        );
     }
 }
-
 ?>

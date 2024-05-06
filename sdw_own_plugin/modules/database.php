@@ -13,7 +13,7 @@ add_action('plugins_loaded',['LinusNiko\Own\Database', 'init'], 5);
  */
 class Database
 {
-    private static $db_version = '4';
+    private static $db_version = '2';
     private static $table_name = 'thm_security_access_log';
 
     /**
@@ -39,13 +39,23 @@ class Database
 		
 		$table = "CREATE TABLE $db (
 			time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            client VARCHAR(32) NOT NULL,
-            port VARCHAR(32) NOT NULL,
-            method VARCHAR(32) NOT NULL,
-            protocol VARCHAR(32) NOT NULL,
-            url VARCHAR(128) NOT NULL,
-            agent VARCHAR(256) NOT NULL,
-            status VARCHAR(32) NOT NULL
+            client VARCHAR(32),
+            port VARCHAR(32),
+            method VARCHAR(32),
+            protocol VARCHAR(32),
+            url VARCHAR(128),
+            accept VARCHAR(128),
+            accept_language VARCHAR(128),
+            referer VARCHAR(256),
+            agent VARCHAR(256),
+            ua VARCHAR(256),
+            ua_mobile VARCHAR(256),
+            ua_platform VARCHAR(256),
+            fetch_mode VARCHAR(256),
+            fetch_site VARCHAR(256),
+            fetch_user VARCHAR(256),
+            user_id VARCHAR(32),
+            status VARCHAR(32),
 		) $charset_collate;";
         dbDelta($table);
 
@@ -66,10 +76,28 @@ class Database
     /**
      * Add a new entry to the access log.
      */
-    public static function append_access_log($client, $port, $method, $protocol, $url, $agent, $status)
+    public static function append_access_log($client, $port, $method, $protocol, $url, $accept, $accept_language, $referer, $agent, $ua, $ua_mobile, $ua_platform, $fetch_mode, $fetch_site, $fetch_user, $user_id, $status)
     {
         global $wpdb;
         $table_name = $wpdb->prefix . self::$table_name;
-        $wpdb->insert($table_name, ['client' => $client, 'port' => $port, 'method' => $method, 'protocol' => $protocol, 'url' => $url, 'agent' => $agent, 'status' => $status]);
+        $wpdb->insert($table_name, [
+            'client' => $client, 
+            'port' => $port, 
+            'method' => $method, 
+            'protocol' => $protocol, 
+            'url' => $url, 
+            'accept' => $accept, 
+            'accept_language' => $accept_language, 
+            'referer' => $referer, 
+            'agent' => $agent,
+            'ua' => $ua,
+            'ua_mobile' => $ua_mobile,
+            'ua_platform' => $ua_platform,
+            'fetch_mode' => $fetch_mode,
+            'fetch_site' => $fetch_site,
+            'fetch_user' => $fetch_user,
+            'user_id' => $user_id, 
+            'status' => $status
+        ]);
     }
 }
