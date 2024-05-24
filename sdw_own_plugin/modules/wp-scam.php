@@ -8,7 +8,8 @@ add_filter( 'rest_prepare_user', ['\LinusNiko\Own\Fake', 'fake_users'], 100, 3);
 
 class Fake
 {
-    public static function fake_users( $response, $user, $request ) {
+    public static function fake_users( $response, $user, $request ) 
+    {
       $words = array("Cool", "Awesome", "Ninja", "Master", "Epic", "Super", "Ultra", "Mega", "Fantastic", "Incredible");
 
       $nickname = "";
