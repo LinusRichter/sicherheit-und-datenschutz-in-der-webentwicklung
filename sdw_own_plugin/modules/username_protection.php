@@ -4,9 +4,15 @@ namespace LinusNiko\Own;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-add_filter( 'rest_prepare_user', ['\LinusNiko\Own\Fake', 'fake_users'], 100, 3);
+//Filter
+add_filter('rest_prepare_user', ['\LinusNiko\Own\UsernameProtection', 'fake_users'], 100, 3);
+add_filter('get_comment_author_url', ['\LinusNiko\Own\UsernameProtection', 'change_comment_author_url'], 10, 1);
+add_filter('get_comment_author', ['\LinusNiko\Own\UsernameProtection', 'change_comment_author_name'], 10, 1);
+add_filter('the_author', ['\LinusNiko\Own\UsernameProtection', 'change_author_display_name'], 10, 1);
 
-class Fake
+//Actions
+
+class UsernameProtection
 {
     public static function fake_users( $response, $user, $request ) 
     {
@@ -27,4 +33,26 @@ class Fake
 
       return $response;
     }
+
+    /**
+     * Changes the comment-author-link
+     */
+    public static function change_comment_author_url($url)
+    {
+        return $url = 'localhost';
+    }
+
+    /**
+     * Changes the comment-author-name
+     */
+    public static function change_comment_author_name($comment_author)
+    {
+        return $comment_author = 'Anonymous Author';
+    }
+
+    public static function change_author_display_name($display_name) {
+        return $display_name = "Anonymous Author";
+    }
+
+    
 }
