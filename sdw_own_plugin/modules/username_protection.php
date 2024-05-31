@@ -4,55 +4,61 @@ namespace LinusNiko\Own;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-//Filter
-add_filter('rest_prepare_user', ['\LinusNiko\Own\UsernameProtection', 'fake_users'], 100, 3);
-add_filter('get_comment_author_url', ['\LinusNiko\Own\UsernameProtection', 'change_comment_author_url'], 10, 1);
-add_filter('get_comment_author', ['\LinusNiko\Own\UsernameProtection', 'change_comment_author_name'], 10, 1);
-add_filter('the_author', ['\LinusNiko\Own\UsernameProtection', 'change_author_display_name'], 10, 1);
+// Filter
+add_filter('the_author', ['\LinusNiko\Own\UsernameProtection', 'hide_usernames']);
+add_filter('get_the_author_display_name', ['\LinusNiko\Own\UsernameProtection', 'hide_usernames']);
+add_filter('get_comment_author', ['\LinusNiko\Own\UsernameProtection', 'hide_usernames']);
+add_filter('author_link', ['\LinusNiko\Own\UsernameProtection', 'hide_author_link'], 10, 2);
+add_filter('rest_prepare_user', ['\LinusNiko\Own\UsernameProtection', 'hide_usernames_in_rest'], 10, 3);
 
-//Actions
+// Action
+add_action('template_redirect', ['\LinusNiko\Own\UsernameProtection', 'redirect_author_pages']);
+add_action('admin_notices', ['\LinusNiko\Own\UsernameProtection', 'warn_if_display_name_is_username']);
 
 class UsernameProtection
 {
-    public static function fake_users( $response, $user, $request ) 
+
+    public static function hide_usernames($display_name)
     {
-      $words = array("Cool", "Awesome", "Ninja", "Master", "Epic", "Super", "Ultra", "Mega", "Fantastic", "Incredible");
-
-      $nickname = "";
-      $numWords = rand(2, 4);
-      for ($i = 0; $i < $numWords; $i++) {
-          $randomWord = $words[array_rand($words)];
-          $nickname .= $randomWord;
-          if ($i < $numWords - 1) {
-              $nickname .= " ";
-          }
-      }
-
-      $response->data['name'] = $nickname;
-      $response->data['slug'] = strtolower($nickname);
-
-      return $response;
+        $user = get_user_by('login', $display_name);
+        if ($user)
+        {
+            return $user->nickname ?: $user->display_name;
+        }
+        return $display_name;
     }
-
-    /**
-     * Changes the comment-author-link
-     */
-    public static function change_comment_author_url($url)
-    {
-        return $url = 'localhost';
-    }
-
-    /**
-     * Changes the comment-author-name
-     */
-    public static function change_comment_author_name($comment_author)
-    {
-        return $comment_author = 'Anonymous Author';
-    }
-
-    public static function change_author_display_name($display_name) {
-        return $display_name = "Anonymous Author";
-    }
-
     
+    public static function hide_author_link($link, $author_id)
+    {
+        return '#';
+    }
+    
+    public static function hide_usernames_in_rest($response, $user, $request)
+    {
+        $data = $response->get_data();
+        $data['name'] = $user->nickname ?: $user->display_name;
+        $data['slug'] = $user->nickname ?: $user->display_name;
+        $response->set_data($data);
+        return $response;
+    }
+    
+    public static function warn_if_display_name_is_username()
+    {
+        $current_user = wp_get_current_user();
+        if ($current_user->user_login === $current_user->display_name)
+        {
+            echo '<div class="notice notice-warning"><p>';
+            echo 'Your display name is the same as your username. This can expose your username publicly, which is a security risk. Please change your display name in your profile settings.';
+            echo '</p></div>';
+        }
+    }
+    
+    public static function redirect_author_pages()
+    {
+        if (is_author())
+        {
+            wp_redirect(home_url());
+            exit;
+        }
+    }
 }
