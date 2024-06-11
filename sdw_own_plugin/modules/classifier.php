@@ -19,10 +19,12 @@ class Classifier
         self::$request_class = self::classify_request();
 
         header("X-THMSEC: ENABLED");
-        header("X-THMSEC-CLASS: $request_class");
+        header("X-THMSEC-CLASS: " . self::$request_class);
 
         if (self::$request_class != 'normal')
         {
+            $count = Database::get_unwanted_requests_count($_SERVER['REMOTE_ADDR'], 1);
+            header("X-THMSEC-COUNT: $count");
             header("HTTP/1.1 404 Not Found");
             exit;
         }
@@ -51,14 +53,49 @@ class Classifier
         if (preg_match('/\/wp-content/i', $uri)) {
             return 'wp-content access';
         }
-        if (preg_match('/.sql/', $uri) || preg_match('/.sqlite3/', $uri)) {
+        if (preg_match('/.sql/i', $uri) || preg_match('/.sqlite3/i', $uri)) {
             return 'database-access';
         }
+        if (preg_match('/\?author/i', $uri)) {
+            return 'author-access';
+        }        
 
-
-        /*if (preg_match('/WPScan/i', $agent) && !is_user_logged_in()) {
-            return 'WP-SCAN';
-        }*/
+        if (preg_match('/searchreplacedb2.php/i', $uri)) {
+            return 'suspicious-file-access';
+        }  
+        if (preg_match('/installer-log.txt/i', $uri)) {
+            return 'suspicious-file-access';
+        }  
+        if (preg_match('/emergency.php/i', $uri)) {
+            return 'suspicious-file-access';
+        }  
+        if (preg_match('/feed/i', $uri)) {
+            return 'suspicious-file-access';
+        }  
+        if (preg_match('/comments\/feed/i', $uri)) {
+            return 'suspicious-file-access';
+        }  
+        if (preg_match('/7f5dcd0.html/i', $uri)) {
+            return 'suspicious-file-access';
+        }  
+        if (preg_match('/backup/i', $uri)) {
+            return 'suspicious-file-access';
+        }  
+        if (preg_match('/fantastico_fileslist.txt/i', $uri)) {
+            return 'suspicious-file-access';
+        }  
+        if (preg_match('/\?attachment_id/i', $uri)) {
+            return 'suspicious-file-access';
+        }  
+        if (preg_match('/wp-json\/oembed/i', $uri)) {
+            return 'suspicious-file-access';
+        }  
+        if (preg_match('/wp-sitemap-users-1.xml/i', $uri)) {
+            return 'suspicious-file-access';
+        }  
+        if (preg_match('/author-sitemap.xml/i', $uri)) {
+            return 'suspicious-file-access';
+        }
 
         return 'normal';
     }

@@ -13,7 +13,7 @@ add_action('plugins_loaded',['LinusNiko\Own\Database', 'init'], 5);
  */
 class Database
 {
-    private static $db_version = '1';
+    private static $db_version = '3';
     private static $table_name = 'thm_security_access_log';
 
     /**
@@ -41,13 +41,8 @@ class Database
 			time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
             client VARCHAR(32),
             method VARCHAR(32),
-            protocol VARCHAR(32),
             url VARCHAR(128),
-            accept VARCHAR(128),
-            accept_language VARCHAR(128),
-            referer VARCHAR(256),
             agent VARCHAR(256),
-            user_id VARCHAR(32),
             status VARCHAR(32),
             classification VARCHAR(32)
 		) $charset_collate;";
@@ -70,22 +65,29 @@ class Database
     /**
      * Add a new entry to the access log.
      */
-    public static function append_access_log($client, $method, $protocol, $url, $accept, $accept_language, $referer, $agent, $user_id, $status, $classification)
+    public static function append_access_log($client, $method, $url, $agent, $status, $classification)
     {
         global $wpdb;
         $table_name = $wpdb->prefix . self::$table_name;
-        $wpdb->insert($table_name, [
+        $result_check = $wpdb->insert($table_name, [
             'client' => $client, 
-            'method' => $method, 
-            'protocol' => $protocol, 
             'url' => $url, 
-            'accept' => $accept, 
-            'accept_language' => $accept_language, 
-            'referer' => $referer, 
+            'method' => $method,
             'agent' => $agent,
-            'user_id' => $user_id, 
             'status' => $status,
             'classification' => $classification
         ]);
     }
+
+    public static function get_unwanted_requests_count($ip, $timeframe_hours)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::$table_name;
+        $timeframe = date('Y-m-d H:i:s', strtotime("-$timeframe_hours hours"));
+        $count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $table_name WHERE client = '%s' AND classification != 'normal' AND time > '%s'", 
+            $ip, $timeframe
+        ));
+        return $count;
+    } 
 }

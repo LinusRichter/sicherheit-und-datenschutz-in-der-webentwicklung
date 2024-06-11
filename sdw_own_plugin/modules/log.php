@@ -59,13 +59,8 @@ class Log
                     <th>Timestamp</th>
                     <th>IP</th>
                     <th>METHOD</th>
-                    <th>PROTOCOL</th>
                     <th>URL</th>
-                    <th>ACCEPT</th>
-                    <th>ACCEPT LANGUAGE</th>
-                    <th>REFERER</th>
                     <th>AGENT</th>
-                    <th>USER ID</th>
                     <th>STATUS</th>
                     <th>CLASSIFICATION</th>
                 </tr>
@@ -76,13 +71,8 @@ class Log
                         <td><?= esc_html($log->time) ?></td>
                         <td><?= esc_html($log->client) ?></td>
                         <td><?= esc_html($log->method) ?></td>
-                        <td><?= esc_html($log->protocol) ?></td>
                         <td><?= esc_html($log->url) ?></td>
-                        <td><?= esc_html($log->accept) ?></td>
-                        <td><?= esc_html($log->accept_language) ?></td>
-                        <td><?= esc_html($log->referer) ?></td>
                         <td><?= esc_html($log->agent) ?></td>
-                        <td><?= esc_html($log->user_id) ?></td>
                         <td><?= esc_html($log->status) ?></td>
                         <td><?= esc_html($log->classification) ?></td>
                     </tr>
@@ -113,16 +103,11 @@ class Log
         Database::append_access_log(
             $_SERVER['REMOTE_ADDR'] ?? '~',
             $_SERVER['REQUEST_METHOD'] ?? '~',
-            $_SERVER['SERVER_PROTOCOL'] ?? '~',
             $_SERVER['REQUEST_URI'] ?? '~',
-            $_SERVER['HTTP_ACCEPT'] ?? '~',
-            $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '~',
-            $_SERVER['HTTP_REFERER'] ?? '~',
             $_SERVER['HTTP_USER_AGENT'] ?? '~',
-            get_current_user_id(),
             http_response_code(),
             Classifier::get_request_class()
-        );
+            );
     }
 }
 ?>
