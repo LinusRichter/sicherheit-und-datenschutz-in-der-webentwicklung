@@ -186,7 +186,7 @@ function test_classifications() {
         echo "Classification Test suspicious-file-access failed\n";
     }
     
-    $url = 'http://127.0.0.1/?attachment_id'; 
+    $url = 'http://127.0.0.1/?attachment_id';
     $expected_classification = 'suspicious-file-access';
     
     $response = get($url);
