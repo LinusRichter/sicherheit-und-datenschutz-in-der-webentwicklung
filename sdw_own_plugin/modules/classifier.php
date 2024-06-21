@@ -4,7 +4,8 @@ namespace LinusNiko\Own;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-add_filter('wp_loaded',['LinusNiko\Own\Classifier', 'classify_init'], 1);
+add_action('wp_loaded',['LinusNiko\Own\Classifier', 'classify_init'], 1);
+add_action('plugins_loaded',['LinusNiko\Own\Classifier', 'is_ip_blocked'], 2);
 
 /**
  * Database module for the THM Security plugin.
@@ -23,7 +24,12 @@ class Classifier
 
         if (self::$request_class != 'normal')
         {
-            $count = Database::get_unwanted_requests_count($_SERVER['REMOTE_ADDR'], 1);
+            $count = Database::get_unwanted_requests_count($_SERVER['REMOTE_ADDR'], 24 * 7);
+            if($count >= 20 && !Database::is_ip_blocked($_SERVER['REMOTE_ADDR']))
+            {
+                Database::append_ip_blacklist_log($_SERVER['REMOTE_ADDR']);
+                die('Your IP address has been blocked. If you think that this is an error, please contact us at support@your-company.com');
+            }
             header("X-THMSEC-COUNT: $count");
             header("HTTP/1.1 404 Not Found");
             exit;
@@ -35,65 +41,59 @@ class Classifier
         $uri = $_SERVER['REQUEST_URI'];
         $agent = $_SERVER['HTTP_USER_AGENT'];
 
-        if (preg_match('/wp-config/i', $uri)) {
-            return 'config-grabber';
-        }
-        if (preg_match('/\/xmlrpc.php/i', $uri)) {
+        if (strpos($uri, '/xmlrpc.php') !== false) {
             return 'xmlrpc-access';
         }
-        if (preg_match('/\/wp-admin/i', $uri) && !is_user_logged_in()) {
+        if (strpos($uri, '/wp-admin') !== false && !is_user_logged_in()) {
             return 'admin-access';
         }
-        if (preg_match('/\/wp-content\/themes/i', $uri)) {
-            return 'theme-access';
-        }
-        if (preg_match('/\/wp-content\/plugins/i', $uri)) {
-            return 'plugins-access';
-        }
-        if (preg_match('/\/wp-content/i', $uri)) {
+        if (strpos($uri, 'wp-content') !== false) {
             return 'wp-content access';
         }
-        if (preg_match('/.sql/i', $uri) || preg_match('/.sqlite3/i', $uri)) {
+        if (strpos($uri, '.sql') !== false || strpos($uri, '.sqlite3') !== false) {
             return 'database-access';
         }
-        if (preg_match('/\?author/i', $uri)) {
+        if (strpos($uri, 'wp-config') !== false) {
+            return 'config-grabber';
+        }
+        if (strpos($uri, '?author') !== false) {
             return 'author-access';
         }        
 
-        if (preg_match('/searchreplacedb2.php/i', $uri)) {
+        if (strpos($uri, 'searchreplacedb2.php') !== false) {
             return 'suspicious-file-access';
         }  
-        if (preg_match('/installer-log.txt/i', $uri)) {
+        if (strpos($uri, 'installer-log.txt') !== false) {
             return 'suspicious-file-access';
         }  
-        if (preg_match('/emergency.php/i', $uri)) {
+        if (strpos($uri, 'emergency.php') !== false) {
             return 'suspicious-file-access';
         }  
-        if (preg_match('/feed/i', $uri)) {
+        if (strpos($uri, 'feed') !== false) {
             return 'suspicious-file-access';
         }  
-        if (preg_match('/comments\/feed/i', $uri)) {
+        if (strpos($uri, 'comments/feed') !== false) {
             return 'suspicious-file-access';
         }  
-        if (preg_match('/7f5dcd0.html/i', $uri)) {
+        if (strpos($uri, '7f5dcd0.html') !== false) {
             return 'suspicious-file-access';
         }  
-        if (preg_match('/backup/i', $uri)) {
+        if (strpos($uri, 'backup') !== false) {
             return 'suspicious-file-access';
         }  
-        if (preg_match('/fantastico_fileslist.txt/i', $uri)) {
+        if (strpos($uri, 'fantastico_fileslist.txt') !== false) {
             return 'suspicious-file-access';
         }  
-        if (preg_match('/\?attachment_id/i', $uri)) {
+        if (strpos($uri, '?attachment_id') !== false) {
             return 'suspicious-file-access';
         }  
-        if (preg_match('/wp-json\/oembed/i', $uri)) {
+        if (strpos($uri, 'wp-json/oembed') !== false) {
             return 'suspicious-file-access';
         }  
-        if (preg_match('/wp-sitemap-users-1.xml/i', $uri)) {
+        if (strpos($uri, 'wp-sitemap-users-1.xml') !== false) {
             return 'suspicious-file-access';
         }  
-        if (preg_match('/author-sitemap.xml/i', $uri)) {
+        if (strpos($uri, 'author-sitemap.xml') !== false) {
             return 'suspicious-file-access';
         }
 
@@ -104,4 +104,13 @@ class Classifier
     {
         return self::$request_class;
     }
+
+    public static function is_ip_blocked()
+    {
+        if (Database::is_ip_blocked($_SERVER['REMOTE_ADDR']))
+        {
+            die('Your IP address has been blocked. If you think that this is an error, please contact us at support@your-company.com');
+        }
+    }
+    
 }

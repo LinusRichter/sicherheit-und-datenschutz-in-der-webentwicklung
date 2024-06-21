@@ -40,7 +40,7 @@ class Log
                 <a href="?page=thm-security&tab=page2" class="nav-tab <?= ($tab == 'page2') ? 'nav-tab-active' : '' ?>">Leere Seite</a>
             </nav>
             <?php if(empty($tab))    self::render_access_log(); ?>
-            <?php if($tab==='page2') self::render_empty_page(); ?>
+            <?php if($tab==='page2') self::render_ip_blacklist_log(); ?>
         </div>
         <?php
     }
@@ -85,13 +85,27 @@ class Log
     /**
      * Renders the empty page tab on the management page.
      */
-    private static function render_empty_page()
+    private static function render_ip_blacklist_log()
     {
+        $logs = Database::get_ip_blacklist_log();
+
         ?>
-        <p>
-            Dies ist eine leere Seite.<br>
-            Sie können beliebig viele weitere Seiten hinzufügen.
-        </p>
+        <table class="wp-list-table widefat fixed striped table-view-list">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach($logs as $log): ?>
+                    <tr>
+                        <td><?= esc_html($log->time) ?></td>
+                        <td><?= esc_html($log->client) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
         <?php
     }
 
@@ -99,7 +113,8 @@ class Log
      * Logs any access to the website into the database.
      */
     public static function log_access()
-    {   
+    {  
+        if(Database::is_ip_blocked($_SERVER['REMOTE_ADDR'])) return;
         Database::append_access_log(
             $_SERVER['REMOTE_ADDR'] ?? '~',
             $_SERVER['REQUEST_METHOD'] ?? '~',
@@ -107,7 +122,7 @@ class Log
             $_SERVER['HTTP_USER_AGENT'] ?? '~',
             http_response_code(),
             Classifier::get_request_class()
-            );
+        );
     }
 }
 ?>

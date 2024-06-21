@@ -27,9 +27,9 @@ class UsernameProtection
             {
                 return $user->nickname;
             }
-            return "Anon";
+            return "Ein Nutzer";
         }
-        return "Anon";
+        return "Ein Nutzer";
     }
     
     public static function hide_author_link($link, $author_id)
@@ -49,7 +49,7 @@ class UsernameProtection
     public static function warn_if_display_name_is_username()
     {
         $current_user = wp_get_current_user();
-        if ($current_user->user_login === $current_user->display_name) //oder nickname?
+        if ($current_user->user_login === $current_user->nickname)
         {
             echo '<div class="notice notice-warning"><p>';
             echo 'Your display name is the same as your username. This can expose your username publicly, which is a security risk. Please change your display name in your profile settings.';
