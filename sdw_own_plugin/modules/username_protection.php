@@ -40,8 +40,16 @@ class UsernameProtection
     public static function hide_usernames_in_rest($response, $user, $request)
     {
         $data = $response->get_data();
-        $data['name'] = $user->nickname ?: $user->display_name;
-        $data['slug'] = $user->nickname ?: $user->display_name;
+
+        if ($user->nickname && $user->nickname !== $user->user_login)
+        {
+            $data['name'] = $user->nickname;
+            $data['slug'] = $user->nickname;
+        }else{
+            $data['name'] = "WordpressUser";
+            $data['slug'] = "WordpressUser";
+        }
+        
         $response->set_data($data);
         return $response;
     }
