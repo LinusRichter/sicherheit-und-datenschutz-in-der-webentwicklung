@@ -15,15 +15,16 @@ add_action('plugins_loaded', ['LinusNiko\Own\Database', 'delete_old_access_log_e
  */
 class Database
 {
-    private static $db_version = '3';
-    private static $table_name = 'thm_security_access_log';
+    private static $db_version = '1';
+    private static $table_access_name = 'thm_security_access_log';
+    private static $table_blacklist_name = 'thm_security_ip_blacklist';
 
     /**
      * Initialize the database module.
      */
     public static function init()
 	{
-		if (get_site_option(self::$table_name . '_db_version') != self::$db_version)
+		if (get_site_option(self::$table_access_name . '_db_version') != self::$db_version)
 		{
 			self::install_db();
 		}
@@ -35,28 +36,26 @@ class Database
     private static function install_db()
     {
         global $wpdb;
-        $db = $wpdb->prefix . self::$table_name;
+        $db_access = $wpdb->prefix . self::$table_access_name;
+        $db_blacklist = $wpdb->prefix . self::$table_blacklist_name;
         
         $charset_collate = $wpdb->get_charset_collate();
         
-        $table = "CREATE TABLE $db (
+        $table = "CREATE TABLE $db_access (
             time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
             client VARCHAR(32),
-            method VARCHAR(32),
             url VARCHAR(128),
-            agent VARCHAR(256),
-            status VARCHAR(32),
             classification VARCHAR(32)
         ) $charset_collate;";
         dbDelta($table);
 
-        $second_table = "CREATE TABLE wp_thm_security_ip_blacklist (
+        $second_table = "CREATE TABLE $db_blacklist (
             client VARCHAR(32),
             time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
         ) $charset_collate;";
         dbDelta($second_table);
 
-        update_site_option(self::$table_name . '_db_version', self::$db_version);
+        update_site_option(self::$table_access_name . '_db_version', self::$db_version);
     }
 
     /**
@@ -65,7 +64,7 @@ class Database
     public static function get_access_log()
     {
         global $wpdb;
-        $table_name = $wpdb->prefix . self::$table_name;
+        $table_name = $wpdb->prefix . self::$table_access_name;
         $logs = $wpdb->get_results("SELECT * FROM $table_name");
         return $logs;
     }
@@ -84,16 +83,13 @@ class Database
     /**
      * Add a new entry to the access log.
      */
-    public static function append_access_log($client, $method, $url, $agent, $status, $classification)
+    public static function append_access_log($client, $url, $classification)
     {
         global $wpdb;
-        $table_name = $wpdb->prefix . self::$table_name;
+        $table_name = $wpdb->prefix . self::$table_access_name;
         $result_check = $wpdb->insert($table_name, [
             'client' => $client, 
             'url' => $url, 
-            'method' => $method,
-            'agent' => $agent,
-            'status' => $status,
             'classification' => $classification
         ]);
     }
@@ -104,7 +100,7 @@ class Database
     public static function append_ip_blacklist_log($client)
     {
         global $wpdb;
-        $table_name = "wp_thm_security_ip_blacklist";
+        $table_name = $wpdb->prefix . self::$table_blacklist_name;
         $result_check = $wpdb->insert($table_name, [
             'client' => $client
         ]);
@@ -120,7 +116,7 @@ class Database
     public static function get_unwanted_requests_count($ip, $timeframe_hours)
     {
         global $wpdb;
-        $table_name = $wpdb->prefix . self::$table_name;
+        $table_name = $wpdb->prefix . self::$table_access_name;
         $timeframe = date('Y-m-d H:i:s', strtotime("-$timeframe_hours hours"));
         $count = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM $table_name WHERE client = '%s' AND classification != 'normal' AND time > '%s'", 
@@ -135,7 +131,7 @@ class Database
     public static function is_ip_blocked($ip)
     {
         global $wpdb;
-        $table_name = "wp_thm_security_ip_blacklist";
+        $table_name = $wpdb->prefix . self::$table_blacklist_name;
         $result = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM $table_name WHERE client = '%s'", 
             $ip
@@ -150,7 +146,7 @@ class Database
     public static function delete_old_ip_blacklist_entries()
     {
         global $wpdb;
-        $table_name = "wp_thm_security_ip_blacklist";
+        $table_name = $wpdb->prefix . self::$table_blacklist_name;
         $timeframe = date('Y-m-d H:i:s', strtotime("-6 months"));
         $wpdb->query($wpdb->prepare(
             "DELETE FROM $table_name WHERE time < '%s'",
@@ -164,7 +160,7 @@ class Database
     public static function delete_old_access_log_entries()
     {
         global $wpdb;
-        $table_name = $wpdb->prefix . self::$table_name;
+        $table_name = $wpdb->prefix . self::$table_access_name;
         $timeframe = date('Y-m-d H:i:s', strtotime("-14 days"));
         $wpdb->query($wpdb->prepare(
             "DELETE FROM $table_name WHERE time < '%s'",

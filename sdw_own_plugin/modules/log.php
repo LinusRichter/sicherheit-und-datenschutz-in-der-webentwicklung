@@ -37,7 +37,7 @@ class Log
             <h1><?= esc_html(get_admin_page_title()) ?></h1>
             <nav class="nav-tab-wrapper">
                 <a href="?page=thm-security" class="nav-tab <?= empty($tab) ? 'nav-tab-active' : '' ?>">Access Log</a>
-                <a href="?page=thm-security&tab=page2" class="nav-tab <?= ($tab == 'page2') ? 'nav-tab-active' : '' ?>">Leere Seite</a>
+                <a href="?page=thm-security&tab=page2" class="nav-tab <?= ($tab == 'page2') ? 'nav-tab-active' : '' ?>">Banned IPs</a>
             </nav>
             <?php if(empty($tab))    self::render_access_log(); ?>
             <?php if($tab==='page2') self::render_ip_blacklist_log(); ?>
@@ -58,10 +58,7 @@ class Log
                 <tr>
                     <th>Timestamp</th>
                     <th>IP</th>
-                    <th>METHOD</th>
                     <th>URL</th>
-                    <th>AGENT</th>
-                    <th>STATUS</th>
                     <th>CLASSIFICATION</th>
                 </tr>
             </thead>
@@ -70,10 +67,7 @@ class Log
                     <tr>
                         <td><?= esc_html($log->time) ?></td>
                         <td><?= esc_html($log->client) ?></td>
-                        <td><?= esc_html($log->method) ?></td>
                         <td><?= esc_html($log->url) ?></td>
-                        <td><?= esc_html($log->agent) ?></td>
-                        <td><?= esc_html($log->status) ?></td>
                         <td><?= esc_html($log->classification) ?></td>
                     </tr>
                 <?php endforeach; ?>
@@ -117,10 +111,7 @@ class Log
         if(Database::is_ip_blocked($_SERVER['REMOTE_ADDR'])) return;
         Database::append_access_log(
             $_SERVER['REMOTE_ADDR'] ?? '~',
-            $_SERVER['REQUEST_METHOD'] ?? '~',
             $_SERVER['REQUEST_URI'] ?? '~',
-            $_SERVER['HTTP_USER_AGENT'] ?? '~',
-            http_response_code(),
             Classifier::get_request_class()
         );
     }
