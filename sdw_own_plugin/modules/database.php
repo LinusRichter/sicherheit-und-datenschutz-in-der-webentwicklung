@@ -9,6 +9,7 @@ require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 add_action('plugins_loaded',['LinusNiko\Own\Database', 'init'], 5);
 add_action('plugins_loaded', ['LinusNiko\Own\Database', 'delete_old_ip_blacklist_entries'], 1);
 add_action('plugins_loaded', ['LinusNiko\Own\Database', 'delete_old_access_log_entries'], 1);
+register_uninstall_hook("sdw_own_plugin\sdw_own_plugin.php", ['LinusNiko\Own\Database', 'uninstall_db']);
 
 /**
  * Database module for the THM Security plugin.
@@ -58,6 +59,16 @@ class Database
         update_site_option(self::$table_access_name . '_db_version', self::$db_version);
     }
 
+    public static function uninstall_db()
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::$table_access_name;
+        $table_name2 = $wpdb->prefix . self::$table_blacklist_name;
+        $wpdb->query("DROP TABLE IF EXISTS $table_name");
+        $wpdb->query("DROP TABLE IF EXISTS $table_name2");
+        delete_site_option(self::$table_access_name . '_db_version');
+    }
+
     /**
      * Get a list of all entries from the access log.
      */
@@ -65,7 +76,7 @@ class Database
     {
         global $wpdb;
         $table_name = $wpdb->prefix . self::$table_access_name;
-        $logs = $wpdb->get_results("SELECT * FROM $table_name");
+        $logs = $wpdb->get_results("SELECT * FROM $table_name LIMIT 3000");
         return $logs;
     }
 
@@ -76,7 +87,7 @@ class Database
     {
         global $wpdb;
         $table_name = $wpdb->prefix . self::$table_blacklist_name;
-        $logs = $wpdb->get_results("SELECT * FROM $table_name");
+        $logs = $wpdb->get_results("SELECT * FROM $table_name LIMIT 3000");
         return $logs;
     }
 
