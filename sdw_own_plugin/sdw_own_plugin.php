@@ -1,16 +1,16 @@
 <?php
 /*
-Plugin Name: Own Plugin
-Description: our own plugin
+Plugin Name: WP-Guardian
+Description: WP-Guardian ist eine moderne Erweiterung für Wordpress, welche Ihre Webseite und die Daten Ihrer Nutzer schützt.
 Version: 1.0.0
-Author: Linus und Niko 
+Author: Linus Richter und Charalambos Makridakis
 */
 
 namespace LinusNiko\Own;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) exit;
 
-require_once(dirname(__FILE__) . '/modules/log.php'); //requires database.php and classifier.php
+require_once(dirname(__FILE__) . '/modules/log.php');
 require_once(dirname(__FILE__) . '/modules/username_protection.php');
 
 ?>

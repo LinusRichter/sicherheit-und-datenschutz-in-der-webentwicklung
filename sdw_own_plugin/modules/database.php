@@ -75,7 +75,7 @@ class Database
     public static function get_ip_blacklist_log()
     {
         global $wpdb;
-        $table_name = "wp_thm_security_ip_blacklist";
+        $table_name = $wpdb->prefix . self::$table_blacklist_name;
         $logs = $wpdb->get_results("SELECT * FROM $table_name");
         return $logs;
     }

@@ -25,16 +25,16 @@ class UsernameProtection
         {
             if ($user->nickname && $user->nickname !== $user->user_login)
             {
-                return $user->nickname;
+                return esc_html($user->nickname);
             }
-            return "Ein Nutzer";
+            return esc_html("Ein Nutzer");
         }
-        return "Ein Nutzer";
+        return esc_html("Ein Nutzer");
     }
     
     public static function hide_author_link($link, $author_id)
     {
-        return '#';
+        return esc_url('#');
     }
     
     public static function hide_usernames_in_rest($response, $user, $request)
@@ -43,11 +43,11 @@ class UsernameProtection
 
         if ($user->nickname && $user->nickname !== $user->user_login)
         {
-            $data['name'] = $user->nickname;
-            $data['slug'] = $user->nickname;
+            $data['name'] = esc_attr($user->nickname);
+            $data['slug'] = esc_attr($user->nickname);
         }else{
-            $data['name'] = "WordpressUser";
-            $data['slug'] = "WordpressUser";
+            $data['name'] = esc_attr("WordpressUser");
+            $data['slug'] = esc_attr("WordpressUser");
         }
         
         $response->set_data($data);
@@ -60,7 +60,7 @@ class UsernameProtection
         if ($current_user->user_login === $current_user->nickname)
         {
             echo '<div class="notice notice-warning"><p>';
-            echo 'Your display name is the same as your username. This can expose your username publicly, which is a security risk. Please change your display name in your profile settings.';
+            echo esc_html('Your display name is the same as your username. This can expose your username publicly, which is a security risk. Please change your display name in your profile settings.');
             echo '</p></div>';
         }
     }

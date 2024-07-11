@@ -28,7 +28,7 @@ class Classifier
             if($count >= 20 && !Database::is_ip_blocked($_SERVER['REMOTE_ADDR']))
             {
                 Database::append_ip_blacklist_log($_SERVER['REMOTE_ADDR']);
-                die('Your IP address has been blocked. If you think that this is an error, please contact us at support@your-company.com');
+                die('Your IP address has been blocked. If you think that this is an error, please contact us.');
             }
             header("X-THMSEC-COUNT: $count");
             header("HTTP/1.1 404 Not Found");
@@ -109,7 +109,7 @@ class Classifier
     {
         if (Database::is_ip_blocked($_SERVER['REMOTE_ADDR']))
         {
-            die('Your IP address has been blocked. If you think that this is an error, please contact us at support@your-company.com');
+            die('Your IP address has been blocked. If you think that this is an error, please contact us.');
         }
     }
     
