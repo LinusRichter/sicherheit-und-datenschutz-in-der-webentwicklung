@@ -59,7 +59,6 @@ class Classifier
         if (strpos($uri, '?author') !== false) {
             return 'author-access';
         }        
-
         if (strpos($uri, 'searchreplacedb2.php') !== false) {
             return 'suspicious-file-access';
         }  

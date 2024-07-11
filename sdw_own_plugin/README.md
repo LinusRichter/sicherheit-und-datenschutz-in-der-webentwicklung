@@ -16,6 +16,9 @@
     </ol>
 </list>
 
+#### Mindestanfoderungen:
+ - WordPress 6.5.5
+ - PHP 8.0
 
 ## Datenschutzinformationen
 
@@ -25,64 +28,69 @@
     <ol>
         <li style="font-weight: bold">IP-Adressen</li>
             <p>Die IP-Adresse ist eine Adresse des Internet-Protokolls, welche WP-Guardian nuzt, um Nutzer und potenzielle Angreifer zu identifizieren.</p>
-        <li style="font-weight: bold">Ressource</li>
-            <p></p>
+        <li style="font-weight: bold">URL</li>
+            <p>Die URL (Uniform Resource Locator) beschreibt die Adresse der angeforderten Ressource auf dem Server. WP-Guardian verwendet die URL, um festzustellen, welche Seiten/Ressourcen aufgerufen werden. Teilweise können hier zusätzlich Daten des Nutzers übertragen werden(z.B.: Optionen zum filtern des Seiteninhalts).</p>
         <li style="font-weight: bold">Nutzerklasse</li>
-            <p></p>
+            <p>Die Nutzerklasse wird von WP-Guardian zu jeder Anfrage generiert. Abhängig von der Ressource, auf welche zugegriffen wurde, wird jeder Anfrage einer IP-Adresse eine Klasse zugeordnet. Diese Klasse bestimmt ob die Anfrage als verdächtig oder normal eingestuft wird.</p>
+        <li style="font-weight: bold">Datum und Uhrzeit</li>
+            <p>WP-Guardian speichert Datum und Uhrzeit von jedem Zugriff, um diese zeitlich einordnen zu  können.</p>
     </ol>
 </list>
 
+#### Datenspeicherung:
+WP-Guardian überprüft bei jedem Seitenzugriff, die Aktualität der gespeicherten Daten. Sollte ein Eintrag im Zugriffsprotokoll zum Zeitpunkt der Überprüfung älter als `14 Tage` sein, wird dieser gelöscht. Einträge in der Liste der blockierten IP-Adressen werden nach dem selben Verfahren gelöscht, wenn sie älter als `9 Monate` sind. 
 
- WP-Guardian bietet eine optimale Unterstützung für WordPress Version 6.5.5. Für andere Versionen kann die Kompatibilität variieren, sodass die besten Ergebnisse mit der empfohlenen Version erzielt werden.
+#### Datenschutzerklärung:
+```
+WP-Guardian
+
+Einsatz von WP-Guardian:
+Diese Seite verwendet die Sicherheitserweiterung WP-Guardian, welche Daten verarbeitet, um Sicherheit und Nutzbarkeit zu verbessern.
+
+Art der Verarbeitung:
+WP-Guardian verwendet Daten, welche vom Browser des Seitenbesuchers übertragen werden, um die Sicherheit und Nutzung unserer Webseiten zu verbessern. Die erhobenen Daten sind dabei nur von Wp-Guardian und Administratoren der Seite einsehbar.
+
+Erhobene Daten:
+1: IP-Adressen: Die IP-Adresse ist eine Adresse des Internet-Protokolls.
+2: URL: Die URL (Uniform Resource Locator) beschreibt die Adresse der angeforderten Ressource auf dem Server.
+3: Nutzerklasse: Die Nutzerklasse wird von WP-Guardian zu jeder Anfrage generiert, abhängig von der Ressource, auf welche zugegriffen wurde.
+4: Datum und Uhrzeit: WP-Guardian speichert Datum und Uhrzeit von jedem Zugriff.
+
+Datenlöschung:
+WP-Guardian überprüft bei jedem Seitenzugriff die Aktualität der gespeicherten Daten. Sollte ein Eintrag im Zugriffsprotokoll zum Zeitpunkt der Überprüfung älter als 14 Tage sein, wird dieser unwiderruflich gelöscht. Einträge in der Liste der blockierten IP-Adressen werden nach dem gleichen Verfahren unwiderruflich gelöscht, wenn sie älter als 9 Monate sind.
+
+Zwecke der Verarbeitung:
+1: IP-Adressen: Die IP-Adresse nutzt WP-Guardian, um Nutzer und potenzielle Angreifer zu identifizieren.
+2: URL: Die URL (Uniform Resource Locator) verwendet WP-Guardian, um festzustellen, welche Seiten und Ressourcen aufgerufen werden.
+3: Nutzerklasse: Die Nutzerklasse wird von WP-Guardian zu jeder Anfrage generiert, um zu einem späteren Zeitpunk zeiteffizient festellen zu können, ob bereits verdächtige Aufrufe über  die assoziierte IP-Adressen getätigt wurden.  
+4: Datum und Uhrzeit: WP-Guardian speichert Datum und Uhrzeit, um diese zeitlich einordnen zu können. 
+
+Empfänger:
+Empfänger der Daten sind: 
+
+1: Administratoren der Seite und Personen mit ausreichenden Berechtigungen, um auf die Datenbank und/oder den Adminbereich der Seite zuzugreifen.  
+2: WP-Guardian selbst verarbeitet und analysiert die erhobenen Daten gemäß den festgelegten Zwecken.
+
+Speicherdauer:
+Die Löschung erfolgt für alle Daten, welche zum Zeitpunkt der Überprüfung veraltet sind. Daten gelten 
+als veraltet nach Ablauf der Fristen, welche in 'Datenlöschung' beschrieben werden. Da die Überprüfung der von Seitenzugriffen abhängig ist, kann die maximale Lebensdauer der daten nicht bestimmt werden. 
+
+Rechtsgrundlage:
+Als Rechtsgrundlage der Erhebung der Daten gilt Art. 6 DSGVO (Rechtmäßigkeit der Verarbeitung).
+```
+
+## Für Administratoren und Entwickler
+
+[Classifier](./docs/classifier.md)
+
+[Database](./docs/database.md)
+
+[Log](./docs/log.md)
+
+[Username-Protection](./docs/username_protection.md)
 
 
 
 
 
 
-
-
-
-
-## Welche Daten sammlen wir?
-Wir sammeln Uhrzeit des Zugriffs, die IP-Adresse, den Port, die Methode, das Protokoll, die URL mit zugehörigen Query-Parametern und den User-Agent.
-
-## Welcher Hook wird genutzt?
-Der verwendete Hook ist `init`, der über `do_action()` die Log-Funktion ausführt, so dass sowohl Zugriffe auf die Webseite, als auch auf den Admin-Bereich der Webseite protokolliert werden.
-
-## Woher kommen die Daten?
-Die Daten (außgenommen die Uhrzeit des Zugriffs) werden aus globalen PHP Server- und Ausführungsumgebungsvariablen entnommen:
-- Als Uhrzeit wird die Zeit des Eintrags in die Datenbank genutzt.
-- Die IP-Adresse wird aus `$_SERVER['REMOTE_ADDR']` entnommen.
-- Der Port wird aus `$_SERVER['REMOTE_PORT']` entnommen.
-- Die Methode wird aus `$_SERVER['REQUEST_METHOD']` entnommen.
-- Das Protokoll wird aus `$_SERVER['SERVER_PROTOCOL']` entnommen.
-- Die URL wird aus `$_SERVER['REQUEST_URI']` entnommen.
-- Der User-Agent wird aus `$_SERVER['HTTP_USER_AGENT']` entnommen.
-
-## Grenzen kennenlernen
-
-### Gehen Browseranfragen zuerst an PHP oder zuerst an den Apache Dienst?
-Die Browseranfragen gehen zuerst an den Webserver (Apache Dienst), der die Anfrage dann - bei Bedarf - an PHP weiterleitet.
-### Welcher der beiden Prozesse liefert Bilder, CSS, Javascript und alle anderen tatsächlich exisiterende Dateien aus?
-Existierende Dateien werden vom Webserver (Apache Dienst) ausgeliefert (Static-Files).
-### Welcher der Prozesse behandelt Fehler wie z.B. 404?
-Der Webserver (Apache Dienst) behandelt Fehler wie z.B. 404.
-### Was genau passiert bei Adressen wie /beispiel-seite/?
-- `/beispiel-seite/` ist ein Permalink, die für Benutzerfreundlichkeit und SEO genutzt werden.
-- Wenn man die `/beispiel-seite/` aufruft, dann sendet der Browser eine GET-Request an die URL.
-- Die Anfrage wird dann vom Webserver bearbeitet und leitet die dann an den PHP Dienst weiter, da es sich um eine WordPress-Seite handelt.
-- WordPress führt dann eine Datenbankabfrage durch, um die Inhalte der Seite mit dem Permalink "beispiel-seite" abzurufen.
-- WordPress generiert dann die HTML-Seite.
-- Die generierte HTML-Datei wird dann an den Webserver zurückgeschickt.
-- Der Webserver sendet dann die erhaltene HTML-Datei an den Client.
-### Enthält unser Log wirklich alle Anfragen? Wie aussagekräftig ist unser Log?
-Unser Log kann nicht alle Anfragen erhalten, da unser Plugin PHP-Seitig ist, sprich Anfragen an Dateien (Static-Files) werden direkt vom Webserver ausgeliefert, ohne PHP miteinzubeziehen.
-In unserem Log entstehen immer noch "Duplikate", daher benötigen wir noch zusätzliche Spalten an Informationen, um Requests besser zu unterscheiden.
-
-## Welche und wie viele Daten sind in unsere CSV-Dateien?
-### Suspicious.csv
-Unsere suspicious.csv hat ungefähr 29 Tausend Einträge, die mit Hilfe von WP-Scan generiert worden sind.
-Der genutze Befehl ist `docker run -it --rm --network="host" wpscanteam/wpscan --update --url http://localhost/ --e ap,at,tt,cb,dbe,u1-5,m1-15`
-### Regular.csv
-Unsere regular.csv hat 27 Einträge, die wir durch Simulation des Nutzerverhaltens auf unserer Webseite erzeugt haben.
