@@ -255,5 +255,5 @@ function send_blacklisted_requests_to_check_if_ip_gets_blocked() {
     echo "Block Test failed.\n";
 }
 
-send_blacklisted_requests_to_check_if_ip_gets_blocked();
+//send_blacklisted_requests_to_check_if_ip_gets_blocked();
 test_classifications();

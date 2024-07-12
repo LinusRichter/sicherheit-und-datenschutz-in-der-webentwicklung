@@ -3,7 +3,7 @@
 require_once __DIR__ . '/curl.php';
 
 //edit Names here
-$loginNames = ['niko', 'linus', 'hans', 'peter'];
+$loginNames = ['niko', 'linus', 'asdasd', 'username'];
 restAPIUserTest($loginNames);
 websiteUserTest($loginNames);
 

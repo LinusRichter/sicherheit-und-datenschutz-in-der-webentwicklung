@@ -50,6 +50,7 @@ class UsernameProtection
             $data['slug'] = esc_attr("WordpressUser");
         }
         
+        $data['url'] = esc_url('#');
         $response->set_data($data);
         return $response;
     }
