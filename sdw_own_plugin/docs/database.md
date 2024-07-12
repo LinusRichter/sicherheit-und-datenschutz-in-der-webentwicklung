@@ -192,3 +192,4 @@ Anschließend wird folgende SQL-Query prepared und ausgeführt: `"DELETE FROM $t
 - Da ein Prefix vor dem Tabellennamen erzeugt wird, sollte es zu keinem Konflikt mit anderen, gleichnamigen Tabellen kommen.
 - Wenn die Länge des Eingabestrings größer ist als die definierten Spaltengrößen der Tabelle, kann es zu unvorhersehbarem Verhalten kommen.
 - Wenn die Speicherdauer geändert wird, muss die Datenschutzerklärung entsprechend angepasst werden.
+- Mit jedem Request wird die Datenbank größer.
