@@ -93,7 +93,7 @@ Diese Methode zeigt eine Warnmeldung im WordPress Admin-Dashboard an, wenn der A
         </p>
     </div>
 
-im Admin--Dashboard angezeigt.
+im Admin-Dashboard angezeigt.
 
 ### `redirect_author_pages()`
 Diese Methode leitet alle Anfragen zu Autorenseiten auf die Startseite um, um die Offenlegung von Benutzernamen durch Autoren-URLs zu verhindern.
@@ -102,4 +102,4 @@ Diese Methode leitet alle Anfragen zu Autorenseiten auf die Startseite um, um di
 
 ## Entwicklerhinweise
 
-- Alle Werte, welche von Methoden zurückgegeben werden, werden escaped.
+- Methodenrückgabewerte werden entweder mit `esc_html()` oder `esc_attr()` escaped.
