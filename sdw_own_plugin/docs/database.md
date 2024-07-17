@@ -2,17 +2,17 @@
 
 ## Überblick
 
-Die `database.php`-Datei bietet Datenbank-Funktionalitäten für das WP-Guardian Plugin. Es verwaltet Zugriff-Logs, IP-Blacklist-Einträge und sorgt für die ordnungsgemäße Handhabung und Bereinigung von Datenbankeinträgen.
+Die `database.php`-Datei bietet Datenbank-Funktionalitäten für das WP-Guardian Plugin. Es verwaltet Access-Logs, IP-Blacklist-Einträge und sorgt für die ordnungsgemäße Handhabung und Bereinigung von Datenbankeinträgen.
 
 ### Hauptfunktionen
 - Initialisierung, Installation und Deinstallation der Datenbanktabellen
-- Verwaltung und Abruf von Accesslog-Einträgen
+- Verwaltung und Abruf von Access-Log-Einträgen
 - Verwaltung und Abruf von IP-Blacklist-Einträgen
-- Löschen alter Datenbankeinträge (Accesslog-Einträge älter als 14 Tagen, IP-Blacklist-Einträge älter als 6 Monaten)
+- Löschen alter Datenbankeinträge (Access-Log-Einträge älter als 14 Tagen, IP-Blacklist-Einträge älter als 6 Monaten)
 
 ## Verwendete Hooks
 
-### Aktionen
+### Actions
 <list>
     <ol>
         <li style="font-weight: bold">plugins_loaded</li>
@@ -32,18 +32,18 @@ Die `database.php`-Datei bietet Datenbank-Funktionalitäten für das WP-Guardian
 ## Klassenvariablen
 
 ### `private static $db_version = '1';`
-Diese Klassenvariable deklariert die "Version der Datenbank". Sie wird intern dazu verwendet, um die Datenbank (neu) zu installieren, wenn sich der Wert ändert.
+Diese Klassenvariable speichert die "Version der Datenbank". Sie wird intern dazu verwendet, um die Datenbank (neu) zu installieren, wenn sich der Wert ändert.
 
 ### `private static $table_access_name = 'thm_security_access_log';`
-Diese Klassenvariable deklariert den Tabellennamen der Accesslog-Tabelle.
+Diese Klassenvariable speichert den Tabellennamen der Access-Log-Tabelle.
 
 ### `private static $table_blacklist_name = 'thm_security_ip_blacklist';`
-Diese Klassenvariable deklariert den Tabellennamen der IP-Blacklist-Tabelle. 
+Diese Klassenvariable speichert den Tabellennamen der IP-Blacklist-Tabelle. 
 
 ## Methoden
 
 ### `init()`
-Diese Methode initialisiert das Datenbankmodul, wenn der Wert der Klassenvariablen `$db_version` ungleich dem Wert der gespeicherten Siteoption ist.
+Diese Methode initialisiert die Datenbank, wenn der Wert der Klassenvariablen `$db_version` ungleich dem Wert der gespeicherten Siteoption ist.
 
 **Funktionsweise:** 
 Überprüft mit 
@@ -99,13 +99,13 @@ Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die Wor
 Danach führt der Befehl `$wpdb->query("DROP TABLE IF EXISTS $table_name")` eine SQL-Abfrage aus, die die Tabelle löscht, wenn sie existiert.
 Der gleiche Vorgang wird für die zweite Tabelle mit dem Befehl `$wpdb->query("DROP TABLE IF EXISTS $table_name2")` durchgeführt.
 
-Schließlich entfernt der Befehl` delete_site_option(self::$table_access_name . '_db_version')`  die gespeicherte Version der Datenbank.
+Schließlich entfernt der Befehl `delete_site_option(self::$table_access_name . '_db_version')`  die gespeicherte Version der Datenbank.
 
 ### `get_access_log()`
-Diese Methode ruft die Einträge des Accesslogs ab.
+Diese Methode ruft die Einträge des Access-Logs ab.
 
 **Funktionsweise:**
-Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die WordPress-Datenbank ermöglicht. Anschließend wird die Variable `$table_name` definiert, um den vollständigen Namen der Tabelle zu enthalten. Dieser Name setzt sich aus dem Tabellenpräfix `$wpdb->prefix` und der statischen Variable self::$table_access_name zusammen.
+Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die WordPress-Datenbank ermöglicht. Anschließend wird die Variable `$table_name` definiert, um den vollständigen Namen der Tabelle zu enthalten. Dieser Name setzt sich aus dem Tabellenpräfix `$wpdb->prefix` und der statischen Variable `self::$table_access_name` zusammen.
 
 Danach führt der Befehl `$logs = $wpdb->get_results("SELECT * FROM $table_name LIMIT 3000")` eine SQL-Abfrage aus, die bis zu 3000 Einträge aus der Tabelle `$table_name` abruft.
 
@@ -126,10 +126,10 @@ Anschließend wird `$logs` zurückgegeben.
 (Array von Objekten): `$logs`
 
 ### `append_access_log($client, $url, $classification)`
-Fügt einen neuen Eintrag zum Zugriff-Log hinzu.
+Fügt einen neuen Eintrag zum Access-Log hinzu.
 
 **Funktionsweise:** 
-Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die WordPress-Datenbank ermöglicht. Der Tabellenname der Blockliste wird aus `$wpdb->prefix` und  `self::$table_access_name` zusammengesetzt und in `$table_name` gespeichert. Anschließend wird `$wpdb->insert()` mit den Argumenten `$table_name` und `['client' => $client, 'url' => $url, 'classification' => $classification]` aufgerufen.
+Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die WordPress-Datenbank ermöglicht. Der Tabellenname des Access-Log wird aus `$wpdb->prefix` und  `self::$table_access_name` zusammengesetzt und in `$table_name` gespeichert. Anschließend wird `$wpdb->insert()` mit den Argumenten `$table_name` und `['client' => $client, 'url' => $url, 'classification' => $classification]` aufgerufen.
 
 **Parameter:**
 - `$client` (string): Die Client-IP-Adresse.
@@ -149,22 +149,20 @@ Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die Wor
 Ruft die Anzahl der unerwünschten Anfragen für eine bestimmte IP-Adresse innerhalb eines gegebenen Zeitrahmens ab.
 
 **Funktionsweise:** 
-Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die WordPress-Datenbank ermöglicht. Der Tabellenname der Blockliste wird aus `$wpdb->prefix` und  `self::$table_blacklist_name` zusammengesetzt und in `$table_name` gespeichert. Anschließend wird der Timestamp berechnen von dem ältesten Eintrag, welche berücksichtigt werden soll (alle älteren Einträge werden vernachlässigt) `date('Y-m-d H:i:s', strtotime("-$timeframe_hours hours"))` und in `$timeframe` gespeichert. Folegende Query wird prepared, ausgeführt und das ergebin `$count` gespeichert: `"SELECT COUNT(*) FROM $table_name WHERE client = '%s' AND classification != 'normal' AND time > '%s'", $ip, $timeframe`
-Die Variable '$count' wird zurückgegeben.
+Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die WordPress-Datenbank ermöglicht. Der Tabellenname des Access-Log wird aus `$wpdb->prefix` und  `self::$table_access_name` zusammengesetzt und in `$table_name` gespeichert. Anschließend wird der Timestamp berechnet von dem ältesten Eintrag, welcher berücksichtigt werden soll (alle älteren Einträge werden vernachlässigt) `date('Y-m-d H:i:s', strtotime("-$timeframe_hours hours"))` und in `$timeframe` gespeichert. Folgende Query wird prepared, ausgeführt und das Ergebnis `$count` gespeichert: `"SELECT COUNT(*) FROM $table_name WHERE client = '%s' AND classification != 'normal' AND time > '%s'", $ip, $timeframe`.
 
 **Parameter:**
 - `$ip` (string): Die IP-Adresse.
 - `$timeframe_hours` (int): Der Zeitrahmen in Stunden.
 
 **Rückgabewert:**
-(int) Die Anzahl der unerwünschten Anfragen.
+- `count` (int): Die Anzahl der unerwünschten Anfragen.
 
 ### `is_ip_blocked($ip)`
-Diese ethode üperprüft, ob die übergebene `IP-Adresse` auf der Blockliste steht.
+Diese Methode üperprüft, ob die übergebene `IP-Adresse` auf der Blockliste steht.
 
 **Funktionsweise:** 
-Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die WordPress-Datenbank ermöglicht. Der Tabellenname der Blockliste wird aus `$wpdb->prefix` und  `self::$table_blacklist_name` zusammengesetzt und in `$table_name` gespeichert. Anschließend wird folgende SQL-Query prepared, ausgeführt und das Ergenis in `$result` gespeichert: `"SELECT COUNT(*) FROM $table_name WHERE client = '%s'", $ip`
-Anschließend wird `$result > 0` zurückgegeben.
+Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die WordPress-Datenbank ermöglicht. Der Tabellenname der Blockliste wird aus `$wpdb->prefix` und  `self::$table_blacklist_name` zusammengesetzt und in `$table_name` gespeichert. Anschließend wird folgende SQL-Query prepared, ausgeführt und das Ergenis in `$result` gespeichert: `"SELECT COUNT(*) FROM $table_name WHERE client = '%s'", $ip`.
 
 **Parameter:**
 - `$ip` (string): Die IP-Adresse.
@@ -176,15 +174,15 @@ Anschließend wird `$result > 0` zurückgegeben.
 Diese Methode löscht alle Einträge der Blockliste, welche älter als `6 Monate` sind.
 
 **Funktionsweise:** 
-Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die WordPress-Datenbank ermöglicht. Der Tabellenname der Blockliste wird aus `$wpdb->prefix` und  `self::$table_blacklist_name` zusammengesetzt und in `$table_name` gespeichert. Der Timestamp vor `6 Monate` wird berechnet duch `date('Y-m-d H:i:s', strtotime("-6 months"))` und in `$timeframe` gespeichert. 
+Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die WordPress-Datenbank ermöglicht. Der Tabellenname der Blockliste wird aus `$wpdb->prefix` und  `self::$table_blacklist_name` zusammengesetzt und in `$table_name` gespeichert. Der Timestamp vor `6 Monaten` wird berechnet duch `date('Y-m-d H:i:s', strtotime("-6 months"))` und in `$timeframe` gespeichert. 
 Anschließend wird folgende SQL-Query prepared und ausgeführt: `"DELETE FROM $table_name WHERE time < '%s'", $timeframe`.
 
 
 ### `delete_old_access_log_entries()`
-Diese Methode löscht alle Einträge des Zugriffsprotokolls, welche älter als `14 Tage` sind.
+Diese Methode löscht alle Einträge des Access-Logs, welche älter als `14 Tage` sind.
 
 **Funktionsweise:** 
-Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die WordPress-Datenbank ermöglicht. Der Tabellenname des Zugriffsprotokolls wird aus `$wpdb->prefix` und  `self::$table_access_name` zusammengesetzt und in `$table_name` gespeichert. Der Timestamp vor `14 Tagen` wird berechnet duch `date('Y-m-d H:i:s', strtotime("-14 days"))` und in `$timeframe` gespeichert. 
+Zuerst wird die globale Variable `$wpdb` aufgerufen, die den Zugriff auf die WordPress-Datenbank ermöglicht. Der Tabellenname des Access-Logs wird aus `$wpdb->prefix` und  `self::$table_access_name` zusammengesetzt und in `$table_name` gespeichert. Der Timestamp vor `14 Tagen` wird berechnet duch `date('Y-m-d H:i:s', strtotime("-14 days"))` und in `$timeframe` gespeichert. 
 Anschließend wird folgende SQL-Query prepared und ausgeführt: `"DELETE FROM $table_name WHERE time < '%s'", $timeframe`.
 
 ## Entwicklerhinweise
@@ -192,4 +190,5 @@ Anschließend wird folgende SQL-Query prepared und ausgeführt: `"DELETE FROM $t
 - Da ein Prefix vor dem Tabellennamen erzeugt wird, sollte es zu keinem Konflikt mit anderen, gleichnamigen Tabellen kommen.
 - Wenn die Länge des Eingabestrings größer ist als die definierten Spaltengrößen der Tabelle, kann es zu unvorhersehbarem Verhalten kommen.
 - Wenn die Speicherdauer geändert wird, muss die Datenschutzerklärung entsprechend angepasst werden.
-- Mit jedem Request wird die Datenbank größer.
+- Mit jedem Request wird die Datenbank größer, was zu einem steigenden Speicherbedarf führt. Daher ist es wichtig, die Serverkapazität regelmäßig zu überprüfen und zu erweitern.
+- Mit Apache Benchmark kann man die die Effizienz der Datenbankabfragen unter hoher Anfragefrequenz bewerten.

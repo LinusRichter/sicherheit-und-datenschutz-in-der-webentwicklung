@@ -89,7 +89,7 @@ Diese Methode zeigt eine Warnmeldung im WordPress Admin-Dashboard an, wenn der A
     padding: 1px 12px;
     border-left-color: #dba617;">
         <p>
-            Your display name is the same as your username. This can expose your username publicly, which is a security risk. Please change your display name in your profile settings
+            Your display name is the same as your username. This can expose your username publicly, which is a security risk. Please change your display name in your profile settings.
         </p>
     </div>
 
